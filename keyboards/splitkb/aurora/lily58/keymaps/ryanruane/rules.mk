@@ -25,12 +25,10 @@ RGBLIGHT_ENABLE = no        # Enable WS2812 RGB underlight.
 RGB_MATRIX_ENABLE = no
 SWAP_HANDS_ENABLE = no      # Enable one-hand typing
 TAP_DANCE_ENABLE = yes      # Enable tap dance functionality
+WPM_ENABLE = yes            # Enable words per minute readings
 
 # If you want to change the display of OLED, you need to change here
-SRC +=  ./lib/rgb_state_reader.c \
-        ./lib/layer_state_reader.c \
-        ./lib/logo_reader.c \
-        ./lib/keylogger.c \
-        # ./lib/mode_icon_reader.c \
-        # ./lib/host_led_state_reader.c \
-        # ./lib/timelogger.c \
+SRC +=  oled/layer_state.c \
+		oled/keyboard_logo.c \
+        oled/clap_logo.c \
+        oled/keylogger.c \
