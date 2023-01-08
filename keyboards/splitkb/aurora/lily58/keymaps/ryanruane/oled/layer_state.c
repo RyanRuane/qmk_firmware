@@ -33,7 +33,7 @@ const char *read_layer_state(void) {
     return layer_state_str;
 }
 
-const uint8_t render_clap_layer_state(uint8_t line) {
+const uint8_t render_lily_layer_state(uint8_t line) {
     oled_set_cursor(0, line);
     oled_write(read_layer_state(), false);
     const uint8_t end_line = line + 2;

@@ -27,14 +27,16 @@ static const char PROGMEM raw_logo_clap[CLAP_FRAMES][ANIM_SIZE] = {
 
 const uint8_t render_clap_logo(uint8_t line) {
     oled_set_cursor(0, line);
-    if (get_current_wpm() <= IDLE_SPEED) {
-        current_idle_count = (current_idle_count + 1) % (IDLE_FRAMES * FRAME_REPETITIONS);
-        oled_write_raw_P(raw_logo_idle[current_idle_count / FRAME_REPETITIONS], ANIM_SIZE);
-    } else {
-        current_clap_count = (current_clap_count + 1) % (CLAP_FRAMES * FRAME_REPETITIONS);
-        oled_write_raw_P(raw_logo_clap[current_clap_count / FRAME_REPETITIONS], ANIM_SIZE);
-    }
-    const uint8_t end_line = line + 5;
-    oled_set_cursor(0, end_line);
+    current_clap_count = (current_clap_count + 1) % (CLAP_FRAMES * FRAME_REPETITIONS);
+    oled_write_raw_P(raw_logo_clap[current_clap_count / FRAME_REPETITIONS], ANIM_SIZE);
+    const uint8_t end_line = line + 4;
+    return end_line;
+}
+
+const uint8_t render_idle_logo(uint8_t line) {
+    oled_set_cursor(0, line);
+    current_idle_count = (current_idle_count + 1) % (IDLE_FRAMES * FRAME_REPETITIONS);
+    oled_write_raw_P(raw_logo_idle[current_idle_count / FRAME_REPETITIONS], ANIM_SIZE);
+    const uint8_t end_line = line + 4;
     return end_line;
 }

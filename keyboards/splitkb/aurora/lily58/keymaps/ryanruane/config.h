@@ -39,10 +39,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #    define RGBLIGHT_VAL_STEP 17
 #endif
 
-#ifdef OLED_ENABLE
-#    define WPM_SAMPLE_SECONDS 1
-#endif
-
 // Underglow
 /*
 #undef RGBLED_NUM
