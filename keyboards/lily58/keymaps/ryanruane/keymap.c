@@ -58,7 +58,7 @@ enum layer_number {
     //   _ADJUST,
 };
 
-// #define DVORAK_ENABLE
+#define DVORAK_ENABLE
 // @formatter:off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #ifdef DVORAK_ENABLE
