@@ -19,10 +19,12 @@ CONSOLE_ENABLE = no         # Console for debug
 ENCODER_ENABLE = no
 EXTRAKEY_ENABLE = yes       # Audio control and System control
 MOUSEKEY_ENABLE = no        # Mouse keys
-NKRO_ENABLE = no
+NKRO_ENABLE = yes
 OLED_ENABLE= yes            # OLED display
 RGBLIGHT_ENABLE = no        # Enable WS2812 RGB underlight.
 RGB_MATRIX_ENABLE = no
+STENO_ENABLE = yes          # Enable steno protocol for plover
+STENO_PROTOCOL = all        # Allow protocol switching (keycodes: QK_STENO_BOLT, QK_STENO_GEMINI)
 SWAP_HANDS_ENABLE = no      # Enable one-hand typing
 TAP_DANCE_ENABLE = yes      # Enable tap dance functionality
 

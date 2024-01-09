@@ -14,6 +14,7 @@
  */
 
 #include QMK_KEYBOARD_H
+#include "keymap_steno.h"
 
 ///////////////////////
 /* Tap Dance Support */
@@ -52,16 +53,26 @@ void hl_reset(qk_tap_dance_state_t *state, void *user_data);
 ////////////////////////
 
 enum layer_number {
-    _MAIN = 0,
+    _DVORAK,
+    _QWERTY,
+    _PLOVER,
     _LOWER,
     _RAISE,
-    //   _ADJUST,
+    _ADJUST,
 };
 
-#define DVORAK_ENABLE
+enum base_layer_keycodes {
+  DVORAK = SAFE_RANGE,
+  QWERTY,
+  PLOVER,
+};
+
+// lower/raise layer keycodes
+#define LOWER TD(LOW_LAYR)
+#define RAISE TD(HIGH_LAYR)
+
 // @formatter:off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-#ifdef DVORAK_ENABLE
   /* DVORAK
    * ,-----------------------------------------.                    ,-----------------------------------------.
    * | ESC  | CAPS | HOME | PgDn | PgUp | End  |                    | Left | Down |  Up  |Right | INS  |  `   |
@@ -70,44 +81,61 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
    * |LShift|   A  |   O  |   E  |   U  |   I  |-------.    ,-------|   D  |   H  |   T  |   N  |   S  |  _   |
    * |------+------+------+------+------+------|BackSP |    | DEL   |------+------+------+------+------+------|
-   * |LAlt  |   ;  |   Q  |   J  |   K  |   X  |-------|    |-------|   B  |   M  |   W  |   V  |   Z  |LShift|
+   * |LALT  |   ;  |   Q  |   J  |   K  |   X  |-------|    |-------|   B  |   M  |   W  |   V  |   Z  |LShift|
    * `-----------------------------------------/       /     \      \-----------------------------------------'
-   *                   |LGUI  |LCTRL |LOWER | /Space  /       \Enter \  |RAISE |LCTRL |LAlt  |
+   *                   |LGUI  |LCTRL |LOWER | /Space  /       \Enter \  |RAISE |LCTRL |LALT  |
    *                   |      |      |      |/       /         \      \ |      |      |      |
    *                   `----------------------------'           '------''--------------------'
    */
-
-  [_MAIN] = LAYOUT(
+  [_DVORAK] = LAYOUT(
     KC_ESC,  KC_CAPS, KC_HOME, KC_PGDN, KC_PGUP, KC_END,                   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_INS,   KC_GRV,
     KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,                     KC_F,    KC_G,    KC_C,    KC_R,    KC_L,     KC_SLSH,
     KC_LSFT,  KC_A,   KC_O,    KC_E,    KC_U,    KC_I,                     KC_D,    KC_H,    KC_T,    KC_N,    KC_S,     KC_UNDS,
     KC_LALT, KC_SCLN, KC_Q,    KC_J,    KC_K,    KC_X,  KC_BSPC,  KC_DEL,  KC_B,    KC_M,    KC_W,    KC_V,    KC_Z,     KC_LSFT,
-                      KC_LGUI, KC_LCTRL, TD(LOW_LAYR),  KC_SPC,   KC_ENT,  TD(HIGH_LAYR), KC_LCTRL, KC_LALT
+                             KC_LGUI, KC_LCTRL, LOWER,  KC_SPC,   KC_ENT,  RAISE, KC_LCTRL, KC_LALT
   ),
-#else
-    /* QWERTY
-       * ,-----------------------------------------.                    ,-----------------------------------------.
-       * | ESC  | CAPS | HOME | PgDn | PgUp | End  |                    | Left | Down |  Up  |Right | INS  |  `   |
-       * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-       * | Tab  |   Q  |   W  |   E  |   R  |   T  |                    |   Y  |   U  |   I  |   O  |   P  |  _   |
-       * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-       * |LShift|   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L  |   ;  |  '   |
-       * |------+------+------+------+------+------|BackSP |    | DEL   |------+------+------+------+------+------|
-       * |LAlt  |   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |   /  |LShift|
-       * `-----------------------------------------/       /     \      \-----------------------------------------'
-       *                   |LGUI  |LCTRL |LOWER | /Space  /       \Enter \  |RAISE |LCTRL |LAlt  |
-       *                   |      |      |      |/       /         \      \ |      |      |      |
-       *                   `----------------------------'           '------''--------------------'
-     */
-
-  [_MAIN] = LAYOUT(
+  /* QWERTY
+     * ,-----------------------------------------.                    ,-----------------------------------------.
+     * | ESC  | CAPS | HOME | PgDn | PgUp | End  |                    | Left | Down |  Up  |Right | INS  |  `   |
+     * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+     * | Tab  |   Q  |   W  |   E  |   R  |   T  |                    |   Y  |   U  |   I  |   O  |   P  |  _   |
+     * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+     * |LShift|   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L  |   ;  |  '   |
+     * |------+------+------+------+------+------|BackSP |    | DEL   |------+------+------+------+------+------|
+     * |LALT  |   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |   /  |LShift|
+     * `-----------------------------------------/       /     \      \-----------------------------------------'
+     *                   |LGUI  |LCTRL |LOWER | /Space  /       \Enter \  |RAISE |LCTRL |LALT  |
+     *                   |      |      |      |/       /         \      \ |      |      |      |
+     *                   `----------------------------'           '------''--------------------'
+   */
+  [_QWERTY] = LAYOUT(
     KC_ESC,   KC_CAPS,KC_HOME, KC_PGDN, KC_PGUP, KC_END,                   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, KC_INS,   KC_GRV,
     KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,     KC_UNDS,
     KC_LSFT,  KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,  KC_QUOT,
     KC_LALT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B,  KC_BSPC,  KC_DEL,  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_LSFT,
-                      KC_LGUI, KC_LCTRL, TD(LOW_LAYR),  KC_SPC,   KC_ENT,  TD(HIGH_LAYR), KC_LCTRL, KC_LALT
+                             KC_LGUI, KC_LCTRL, LOWER,  KC_SPC,   KC_ENT,  RAISE, KC_LCTRL, KC_LALT
   ),
-#endif
+  /* PLOVER - Steno keyboard using Steno Protocol TX Bolt or GeminiPR (so that plover can use that and ignore key presses from other layers)
+     * ,-----------------------------------------.                    ,-----------------------------------------.
+     * | ESC  |  S   |  T   |  P   |  H   |  *   |                    |   *  |  F   |  P   |  L   |  T   |  D   |
+     * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+     * | Tab  |  S   |  K   |  W   |  R   |  *   |                    |   *  |  R   |  B   |  G   |  S   |  Z   |
+     * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
+     * |LShift| CAPS | HOME | PgDn | PgUp | End  |-------.    ,-------| Left | Down |  Up  |Right | INS  | Prnt |
+     * |------+------+------+------+------+------|BackSP |    | DEL   |------+------+------+------+------+------|
+     * |LALT  |GEMINI|TXBOLT|  #   |  A   |  O   |-------|    |-------|   E  |  U   |  #   |NK_TOGG|     |LShift|
+     * `-----------------------------------------/       /     \      \-----------------------------------------'
+     *                   |LGUI  |LCTRL |LOWER | /Space  /       \Enter \  |RAISE |LCTRL |LALT  |
+     *                   |      |      |      |/       /         \      \ |      |      |      |
+     *                   `----------------------------'           '------''--------------------'
+   */
+  [_PLOVER] = LAYOUT(
+    KC_ESC,  STN_S1,          STN_TL,        STN_PL,  STN_HL,  STN_ST1,                  STN_ST3, STN_FR,  STN_PR, STN_LR,  STN_TR,  STN_DR,   
+    KC_TAB,  STN_S2,          STN_KL,        STN_WL,  STN_RL,  STN_ST2,                  STN_ST4, STN_RR,  STN_BR, STN_GR,  STN_SR,  STN_ZR,
+    KC_LSFT, KC_CAPS,         KC_HOME,       KC_PGDN, KC_PGUP, KC_END,                   KC_LEFT, KC_DOWN, KC_UP,  KC_RGHT, KC_INS,  KC_PSCR,
+    KC_LALT, QK_STENO_GEMINI, QK_STENO_BOLT, STN_N1,  STN_A,   STN_O,   KC_BSPC, KC_DEL, STN_E,   STN_U,   STN_N2, NK_TOGG, XXXXXXX, KC_LSFT,
+                                             KC_LGUI, KC_LCTRL, LOWER,  KC_SPC,  KC_ENT, RAISE, KC_LCTRL, KC_LALT
+  ),
   /* LOWER - keys on lower and raise are divided into symmetrical halfs of same hand (hard shortcuts, hold infrequent or toggle) and other hand (easy shortcuts, hold)
    * ,-----------------------------------------.                    ,-----------------------------------------.
    * | ESC  | CAPS | HOME | PgDn | PgUp | End  |                    | Left | Down |  Up  |Right | INS  |  `   |
@@ -128,7 +156,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                      KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_QUES,
     _______, KC_P1,   KC_P2,   KC_P3,   KC_P4,   KC_P5,                      KC_CIRC, KC_AMPR, KC_ASTR, KC_MINS, KC_PLUS, KC_EQL,
     _______, KC_P6,   KC_P7,   KC_P8,   KC_P9,   KC_P0,   _______, _______,  KC_PIPE, KC_RPRN, KC_RCBR, KC_RBRC, KC_GT,   _______,
-    _______, _______, _______, _______, _______,  _______, _______, _______
+                               _______, _______, _______, _______, _______,  _______, _______, _______
   ),
   /* RAISE - keys on lower and raise are divided into symmetrical halfs of same hand (hard shortcuts, hold infrequent or toggle) and other hand (easy shortcuts, hold)
    * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -150,35 +178,35 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_BSLS, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                      KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,   KC_F12,
     _______, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,                      KC_NUM,  KC_VOLU, KC_MNXT, KC_MPLY, KC_P1,   KC_RSFT,
     _______, KC_LT,   KC_LBRC, KC_LCBR, KC_LPRN, KC_TILD, _______, _______, KC_SCRL, KC_VOLD, KC_MPRV, KC_MUTE, KC_RGUI,  KC_RALT,
-    _______, _______, _______, _______, _______, _______, _______, _______
+                               _______, _______, _______, _______, _______, _______, _______, _______
   ),
   /* ADJUST - once memory permits will be used for multi key shortcuts
    * ,-----------------------------------------.                    ,-----------------------------------------.
    * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-   * |      |      |      |      |      |      |                    |      |      |      |      |      |      |
+   * |      |      |      |      |NK_TOGG|     |                    |      |QWERTY|      |      |      |      |
    * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-   * |      |      |      |      |      |      |-------.    ,-------|      |      |RGB ON| HUE+ | SAT+ | VAL+ |
+   * |      |      |      |      |PLOVER|      |-------.    ,-------|      |DVORAK|      |      |      |      |
    * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|
-   * |      |      |      |      |      |      |-------|    |-------|      |      | MODE | HUE- | SAT- | VAL- |
+   * |      |      |      |      |      |      |-------|    |-------|      |      |      |      |      |      |
    * `-----------------------------------------/       /     \      \-----------------------------------------'
-   *                   | LAlt | LGUI |LOWER | /Space  /       \Enter \  |RAISE |BackSP| RGUI |
+   *                   | LGUI |LCTRL |LOWER | /Space  /       \Enter \  |RAISE |RCTRL | LAlt |
    *                   |      |      |      |/       /         \      \ |      |      |      |
    *                   `----------------------------'           '------''--------------------'
    */
-  // [_ADJUST] = LAYOUT(
-  //   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-  //   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-  //  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-  //   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-  //                              _______, _______, _______, _______, _______,  _______, _______, _______
-  // )
+  [_ADJUST] = LAYOUT(
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,                   XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, NK_TOGG, XXXXXXX,                   XXXXXXX, QWERTY,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, PLOVER,  XXXXXXX,                   XXXXXXX, DVORAK,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+    XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
+                               _______, _______, _______, _______, _______,  _______, _______, _______
+  ),
 };
 // @formatter:on
 
-// layer_state_t layer_state_set_user(layer_state_t state) {
-//   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
-// }
+layer_state_t layer_state_set_user(layer_state_t state) {
+  return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+}
 
 ///////////////////////////////
 /* RGB Processing Functions */
@@ -230,6 +258,9 @@ oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 }
 
 // When you add source files to SRC in rules.mk, you can use functions.
+void set_label_dvorak(void);
+void set_label_qwerty(void);
+void set_label_plover(void);
 const uint8_t render_lily_layer_state(uint8_t line);
 
 void          add_to_keylog_queue(uint16_t keycode);
@@ -242,12 +273,11 @@ const uint8_t render_key_info(uint8_t line);
 
 const uint8_t render_clap_logo(uint8_t line);
 const uint8_t render_idle_logo(uint8_t line);
-const uint8_t render_keyboard_logo(uint8_t line);
 
-// const char *read_mode_icon(bool swap);
-// const char *read_host_led_state(void);
-// void set_timelog(void);
-// const char *read_timelog(void);
+void set_keyboard_logo_to_dvorak(void);
+void set_keyboard_logo_to_qwerty(void);
+void set_keyboard_logo_to_plover(void);
+const uint8_t render_keyboard_logo(uint8_t line);
 
 bool oled_task_user(void) {
     // A 128x32 OLED rotated 90 degrees is 5 characters wide and 16 characters tall
@@ -272,6 +302,14 @@ bool oled_task_user(void) {
 /* Keypress Processing Functions */
 ///////////////////////////////////
 
+// Set-up defaults
+void matrix_init_user(void) {
+    steno_set_mode(STENO_MODE_GEMINI); // or STENO_MODE_BOLT
+    set_label_dvorak();
+    set_keyboard_logo_to_dvorak();
+    set_single_persistent_default_layer(_DVORAK); // or _QWERTY or _PLOVER
+}
+
 // Intercept any key presses and post process them
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
@@ -282,6 +320,45 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // set_timelog();
         // Allow escape to cancel tap dance layer toggles
         switch (keycode) {
+            case DVORAK:
+                if (record->event.pressed) {
+                    set_label_dvorak();
+                    set_keyboard_logo_to_dvorak();
+                    set_single_persistent_default_layer(_DVORAK);
+                    layer_off(_RAISE);
+                    layer_off(_LOWER);
+                    layer_off(_ADJUST);
+                }
+                return false;
+                break;
+            case QWERTY:
+                if (record->event.pressed) {
+                    set_label_qwerty();
+                    set_keyboard_logo_to_qwerty();
+                    set_single_persistent_default_layer(_QWERTY);
+                    layer_off(_RAISE);
+                    layer_off(_LOWER);
+                    layer_off(_ADJUST);
+                }
+                return false;
+                break;
+             case PLOVER:
+                if (record->event.pressed) {
+                    set_label_plover();
+                    set_keyboard_logo_to_plover();
+                    set_single_persistent_default_layer(_PLOVER);
+                    layer_off(_RAISE);
+                    layer_off(_LOWER);
+                    layer_off(_ADJUST);
+                    if (!eeconfig_is_enabled()) {
+                        eeconfig_init();
+                    }
+                    keymap_config.raw = eeconfig_read_keymap();
+                    keymap_config.nkro = 1;
+                    eeconfig_update_keymap(keymap_config.raw);
+                }
+                return false;
+                break;
             case KC_ESC:
                 layer_off(_RAISE);
                 layer_off(_LOWER);

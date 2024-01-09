@@ -1,21 +1,31 @@
-
 #include QMK_KEYBOARD_H
 #include <stdio.h>
 
-#define L_BASE 0
-#define L_LOWER (1 << 1)
-#define L_RAISE (1 << 2)
-#define L_ADJUST (1 << 3)
+#define L_MAIN 0
+#define L_LOWER (1 << 3)
+#define L_RAISE (1 << 4)
+#define L_ADJUST (1 << 5)
 #define L_ADJUST_TRI (L_ADJUST | L_RAISE | L_LOWER)
 
+char base_state_str[24];
 char layer_state_str[24];
 
+void set_label_dvorak(void) {
+    snprintf(base_state_str, sizeof(base_state_str), "DVRAK=====");
+}
+
+void set_label_qwerty(void) {
+    snprintf(base_state_str, sizeof(base_state_str), "QWRTY=====");
+}
+
+void set_label_plover(void) {
+    snprintf(base_state_str, sizeof(base_state_str), "PLOVR=====");
+}
+
 const char *read_layer_state(void) {
-    // A 128x32 OLED rotated 90 degrees is 5 characters wide and 16 characters tall
     switch (layer_state) {
-        case L_BASE:
-            snprintf(layer_state_str, sizeof(layer_state_str), "MAIN =====");
-            break;
+        case L_MAIN:
+            return base_state_str;
         case L_RAISE:
             snprintf(layer_state_str, sizeof(layer_state_str), "RAISE=====");
             break;
