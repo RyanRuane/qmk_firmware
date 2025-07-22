@@ -14,7 +14,6 @@
  */
 
 #include QMK_KEYBOARD_H
-#include "keymap_steno.h"
 
 ///////////////////////
 /* Tap Dance Support */
@@ -38,15 +37,15 @@ enum {
 // Declare the functions to be used with your tap dance key(s)
 
 // Function associated with all tap dances
-td_state_t cur_dance(qk_tap_dance_state_t *state);
+td_state_t cur_dance(tap_dance_state_t *state);
 
 // Functions associated with individual tap dances
-void ll_finished(qk_tap_dance_state_t *state, void *user_data);
-void hl_finished(qk_tap_dance_state_t *state, void *user_data);
-// void cs_finished(qk_tap_dance_state_t *state, void *user_data);
-void ll_reset(qk_tap_dance_state_t *state, void *user_data);
-void hl_reset(qk_tap_dance_state_t *state, void *user_data);
-// void cs_reset(qk_tap_dance_state_t *state, void *user_data);
+void ll_finished(tap_dance_state_t *state, void *user_data);
+void hl_finished(tap_dance_state_t *state, void *user_data);
+// void cs_finished(tap_dance_state_t *state, void *user_data);
+void ll_reset(tap_dance_state_t *state, void *user_data);
+void hl_reset(tap_dance_state_t *state, void *user_data);
+// void cs_reset(tap_dance_state_t *state, void *user_data);
 
 ////////////////////////
 /* Layers Definitions */
@@ -92,7 +91,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,  KC_QUOT, KC_COMM, KC_DOT,  KC_P,    KC_Y,                     KC_F,    KC_G,    KC_C,    KC_R,    KC_L,     KC_SLSH,
     KC_LSFT,  KC_A,   KC_O,    KC_E,    KC_U,    KC_I,                     KC_D,    KC_H,    KC_T,    KC_N,    KC_S,     KC_UNDS,
     KC_LALT, KC_SCLN, KC_Q,    KC_J,    KC_K,    KC_X,  KC_BSPC,  KC_DEL,  KC_B,    KC_M,    KC_W,    KC_V,    KC_Z,     KC_LSFT,
-                             KC_LGUI, KC_LCTRL, LOWER,  KC_SPC,   KC_ENT,  RAISE, KC_LCTRL, KC_LALT
+                             KC_LGUI, KC_LCTL,  LOWER,  KC_SPC,   KC_ENT,  RAISE, KC_LCTL,  KC_LALT
   ),
   /* QWERTY
      * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -113,7 +112,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,   KC_Q,   KC_W,    KC_E,    KC_R,    KC_T,                     KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,     KC_UNDS,
     KC_LSFT,  KC_A,   KC_S,    KC_D,    KC_F,    KC_G,                     KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN,  KC_QUOT,
     KC_LALT,  KC_Z,   KC_X,    KC_C,    KC_V,    KC_B,  KC_BSPC,  KC_DEL,  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,  KC_LSFT,
-                             KC_LGUI, KC_LCTRL, LOWER,  KC_SPC,   KC_ENT,  RAISE, KC_LCTRL, KC_LALT
+                             KC_LGUI, KC_LCTL,  LOWER,  KC_SPC,   KC_ENT,  RAISE, KC_LCTL,  KC_LALT
   ),
   /* PLOVER - Steno keyboard using Steno Protocol TX Bolt or GeminiPR (so that plover can use that and ignore key presses from other layers)
      * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -134,7 +133,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_TAB,  STN_S1,          STN_TL,        STN_PL,  STN_HL,  STN_ST1,                  STN_ST3, STN_FR,  STN_PR, STN_LR,  STN_TR,  STN_DR,
     KC_LSFT, STN_S2,          STN_KL,        STN_WL,  STN_RL,  STN_ST2,                  STN_ST4, STN_RR,  STN_BR, STN_GR,  STN_SR,  STN_ZR,
     KC_LALT, QK_STENO_GEMINI, QK_STENO_BOLT, STN_N1,  STN_A,   STN_O,   KC_BSPC, KC_DEL, STN_E,   STN_U,   STN_N2, NK_TOGG, XXXXXXX, KC_LSFT,
-                                             KC_LGUI, KC_LCTRL, LOWER,  KC_SPC,  KC_ENT, RAISE, KC_LCTRL, KC_LALT
+                                             KC_LGUI, KC_LCTL, LOWER,   KC_SPC,  KC_ENT, RAISE, KC_LCTL,  KC_LALT
   ),
   /* LOWER - keys on lower and raise are divided into symmetrical halfs of same hand (hard shortcuts, hold infrequent or toggle) and other hand (easy shortcuts, hold)
    * ,-----------------------------------------.                    ,-----------------------------------------.
@@ -342,7 +341,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
                 return false;
                 break;
-             case PLOVER:
+            case PLOVER:
                 if (record->event.pressed) {
                     set_label_plover();
                     set_keyboard_logo_to_plover();
@@ -353,9 +352,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     if (!eeconfig_is_enabled()) {
                         eeconfig_init();
                     }
-                    keymap_config.raw = eeconfig_read_keymap();
+                    eeconfig_read_keymap(&keymap_config);
                     keymap_config.nkro = 1;
-                    eeconfig_update_keymap(keymap_config.raw);
+                    eeconfig_update_keymap(&keymap_config);
                 }
                 return false;
                 break;
@@ -389,7 +388,7 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
 }
 
 // Determine the current tap dance state
-td_state_t cur_dance(qk_tap_dance_state_t *state) {
+td_state_t cur_dance(tap_dance_state_t *state) {
     if (state->count > 0) {
         if (!state->pressed)
             return TD_SINGLE_TAP;
@@ -413,7 +412,7 @@ static td_tap_t hl_tap_state = {.is_press_action = true, .state = TD_NONE};
 //};
 
 // Function that controls lower layer key behaviour
-void ll_finished(qk_tap_dance_state_t *state, void *user_data) {
+void ll_finished(tap_dance_state_t *state, void *user_data) {
     ll_tap_state.state = cur_dance(state);
     switch (ll_tap_state.state) {
         // case TD_DOUBLE_TAP:
@@ -441,7 +440,7 @@ void ll_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void ll_reset(qk_tap_dance_state_t *state, void *user_data) {
+void ll_reset(tap_dance_state_t *state, void *user_data) {
     // If the key was held down and now is released then switch off the layer
     if (ll_tap_state.state == TD_SINGLE_HOLD) {
         layer_off(_LOWER);
@@ -450,7 +449,7 @@ void ll_reset(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 // Function that controls higher layer key behaviour
-void hl_finished(qk_tap_dance_state_t *state, void *user_data) {
+void hl_finished(tap_dance_state_t *state, void *user_data) {
     hl_tap_state.state = cur_dance(state);
     switch (hl_tap_state.state) {
         // case TD_DOUBLE_TAP:
@@ -478,7 +477,7 @@ void hl_finished(qk_tap_dance_state_t *state, void *user_data) {
     }
 }
 
-void hl_reset(qk_tap_dance_state_t *state, void *user_data) {
+void hl_reset(tap_dance_state_t *state, void *user_data) {
     // If the key was held down and now is released then switch off the layer
     if (hl_tap_state.state == TD_SINGLE_HOLD) {
         layer_off(_RAISE);
@@ -487,7 +486,7 @@ void hl_reset(qk_tap_dance_state_t *state, void *user_data) {
 }
 
 // Function that controls caps/shift key behaviour
-// void cs_finished(qk_tap_dance_state_t *state, void *user_data) {
+// void cs_finished(tap_dance_state_t *state, void *user_data) {
 //    cs_tap_state.state = cur_dance(state);
 //    switch (cs_tap_state.state) {
 //        // case TD_DOUBLE_TAP:
@@ -505,7 +504,7 @@ void hl_reset(qk_tap_dance_state_t *state, void *user_data) {
 //    }
 //}
 
-// void cs_reset(qk_tap_dance_state_t *state, void *user_data) {
+// void cs_reset(tap_dance_state_t *state, void *user_data) {
 //     // If the key was held down and now is released then switch off the layer
 //     if (cs_tap_state.state == TD_SINGLE_HOLD) {
 //	unregister_code(KC_LSFT);
@@ -514,7 +513,7 @@ void hl_reset(qk_tap_dance_state_t *state, void *user_data) {
 // }
 
 // Associate our tap dance key with its functionality
-qk_tap_dance_action_t tap_dance_actions[] = {
+tap_dance_action_t tap_dance_actions[] = {
     [LOW_LAYR]  = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ll_finished, ll_reset),
     [HIGH_LAYR] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, hl_finished, hl_reset),
     // [KC_LSFT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, cs_finished, cs_reset),
