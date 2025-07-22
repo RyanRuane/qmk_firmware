@@ -117,11 +117,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   ),
   /* PLOVER - Steno keyboard using Steno Protocol TX Bolt or GeminiPR (so that plover can use that and ignore key presses from other layers)
      * ,-----------------------------------------.                    ,-----------------------------------------.
-     * | ESC  |  S   |  T   |  P   |  H   |  *   |                    |   *  |  F   |  P   |  L   |  T   |  D   |
+     * | ESC  | CAPS | HOME | PgDn | PgUp | End  |                    | Left | Down |  Up  |Right | INS  | Prnt |
      * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-     * | Tab  |  S   |  K   |  W   |  R   |  *   |                    |   *  |  R   |  B   |  G   |  S   |  Z   |
+     * | Tab  |  S   |  T   |  P   |  H   |  *   |                    |   *  |  F   |  P   |  L   |  T   |  D   |
      * |------+------+------+------+------+------|                    |------+------+------+------+------+------|
-     * |LShift| CAPS | HOME | PgDn | PgUp | End  |-------.    ,-------| Left | Down |  Up  |Right | INS  | Prnt |
+     * |LShift|  S   |  K   |  W   |  R   |  *   |-------.    ,-------|   *  |  R   |  B   |  G   |  S   |  Z   |
      * |------+------+------+------+------+------|BackSP |    | DEL   |------+------+------+------+------+------|
      * |LALT  |GEMINI|TXBOLT|  #   |  A   |  O   |-------|    |-------|   E  |  U   |  #   |NK_TOGG|     |LShift|
      * `-----------------------------------------/       /     \      \-----------------------------------------'
@@ -130,9 +130,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      *                   `----------------------------'           '------''--------------------'
    */
   [_PLOVER] = LAYOUT(
-    KC_ESC,  STN_S1,          STN_TL,        STN_PL,  STN_HL,  STN_ST1,                  STN_ST3, STN_FR,  STN_PR, STN_LR,  STN_TR,  STN_DR,   
-    KC_TAB,  STN_S2,          STN_KL,        STN_WL,  STN_RL,  STN_ST2,                  STN_ST4, STN_RR,  STN_BR, STN_GR,  STN_SR,  STN_ZR,
-    KC_LSFT, KC_CAPS,         KC_HOME,       KC_PGDN, KC_PGUP, KC_END,                   KC_LEFT, KC_DOWN, KC_UP,  KC_RGHT, KC_INS,  KC_PSCR,
+    KC_ESC,  KC_CAPS,         KC_HOME,       KC_PGDN, KC_PGUP, KC_END,                   KC_LEFT, KC_DOWN, KC_UP,  KC_RGHT, KC_INS,  KC_PSCR,
+    KC_TAB,  STN_S1,          STN_TL,        STN_PL,  STN_HL,  STN_ST1,                  STN_ST3, STN_FR,  STN_PR, STN_LR,  STN_TR,  STN_DR,
+    KC_LSFT, STN_S2,          STN_KL,        STN_WL,  STN_RL,  STN_ST2,                  STN_ST4, STN_RR,  STN_BR, STN_GR,  STN_SR,  STN_ZR,
     KC_LALT, QK_STENO_GEMINI, QK_STENO_BOLT, STN_N1,  STN_A,   STN_O,   KC_BSPC, KC_DEL, STN_E,   STN_U,   STN_N2, NK_TOGG, XXXXXXX, KC_LSFT,
                                              KC_LGUI, KC_LCTRL, LOWER,  KC_SPC,  KC_ENT, RAISE, KC_LCTRL, KC_LALT
   ),
