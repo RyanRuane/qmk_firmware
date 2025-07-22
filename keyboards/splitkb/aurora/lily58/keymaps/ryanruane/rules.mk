@@ -14,6 +14,7 @@
 AUDIO_ENABLE = no           # Audio output
 BACKLIGHT_ENABLE = no       # Enable keyboard backlight functionality
 BOOTMAGIC_ENABLE = no       # Enable Bootmagic Lite
+BOOTLOADER = atmel-dfu      # Elite-C micro controller
 COMMAND_ENABLE = no         # Commands for debug and configuration
 CONSOLE_ENABLE = no         # Console for debug
 ENCODER_ENABLE = no

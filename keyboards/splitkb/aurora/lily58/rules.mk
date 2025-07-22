@@ -13,4 +13,4 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-DEFAULT_FOLDER = splitkb/aurora/lily58/rev1
+DEFAULT_KEYMAP := ryanruane
